@@ -10,11 +10,12 @@ int main()
 {
 	ifstream fin("input.txt");
 	ofstream fout("output.txt");
-	if (!fin.is_open()) // Если файл не был открыт
+	if (!fin.is_open()) // Г…Г±Г«ГЁ ГґГ Г©Г« Г­ГҐ ГЎГ»Г« Г®ГІГЄГ°Г»ГІ
 		cout << "File can/t be opened.\n";
 	else
 	{
-		int N, T;
+		int N;
+		double T;
 		double Lx, Ly, Lz;
 		double m0 = 6.63e-26;
 		double k = 1.38e-23;
