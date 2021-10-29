@@ -39,7 +39,7 @@ int main()
 		Vy.resize(N);
 		Vz.resize(N);
 		int ID = 0;
-		int n = pow(N, 1.0 / 3.0);
+		int n = ceil(pow(N, 1.0 / 3.0));
 		Ly = Lz = Lx;
 		double Z = 0.0;
 		for (int k = 0; k < n; k++) {
