@@ -15,8 +15,7 @@ int main()
 	else
 	{
 		int N;
-		double T;
-		double Lx, Ly, Lz;
+		double Lx, Ly, Lz, T;
 		double m0 = 6.63e-26;
 		double k = 1.38e-23;
 		fin >> N;
