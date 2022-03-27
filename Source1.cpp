@@ -10,19 +10,20 @@ int main()
 {
 	ifstream fin("input.txt");
 	ofstream fout("output.txt");
-	if (!fin.is_open()) // Åñëè ôàéë íå áûë îòêðûò
+	if (!fin.is_open()) // Esli file ne bil otkrit
 		cout << "File can/t be opened.\n";
 	else
 	{
 		int N;
-		double Lx, Ly, Lz, T;
+		double Lx, Ly, Lz, T0, Tx, Ty, Tz, T, c;
 		double m0 = 6.63e-26;
 		double k = 1.38e-23;
 		fin >> N;
 		fin >> Lx;
-		fin >> T;
+		fin >> T0;
 		fin.close();
-		double sigma = sqrt(k * T / m0);
+		double sigma = sqrt(k * T0 / m0);
+		fout << sigma*sigma << endl;
 		std::random_device rd{};
 		std::mt19937 gen{ rd() };
 		std::normal_distribution<> d{ 0, sigma };
@@ -80,12 +81,39 @@ int main()
 			sumy2 += Vy[ID] * Vy[ID];
 			sumz2 += Vz[ID] * Vz[ID];
 		}
-		fout << sumx / N << endl;
-		fout << sumy / N << endl;
-		fout << sumz / N << endl;
-		fout << sumx2 / N << endl;
-		fout << sumy2 / N << endl;
-		fout << sumz2 / N << endl;
+		Tx = sumx2 * m0 / (N * k);
+		Ty = sumy2 * m0 / (N * k);
+		Tz = sumz2 * m0 / (N * k);
+		T = (Tx + Ty + Tz) / 3;
+		c = sqrt(T0 / T);
+		fout << "Vx средняя равна " << sumx / N << endl;
+		fout << "Vy средняя равна " << sumy / N << endl;
+		fout << "Vz средняя равна " << sumz / N << endl;
+		fout << "Vx в квадрате средняя равна " << sumx2 / N << endl;
+		fout << "Vy в квадрате средняя равна " << sumy2 / N << endl;
+		fout << "Vz в квадрате средняя равна " << sumz2 / N << endl;
+		fout << "T0 была равна " << T0 << ", T  теперь равно " << T << endl;
+		vector<double>Vxm;
+		vector<double>Vym;
+		vector<double>Vzm;
+		Vxm.resize(N);
+		Vym.resize(N);
+		Vzm.resize(N);
+		double sumxm = 0;
+		double sumym = 0;
+		double sumzm = 0;
+		for (int ID = 0; ID < N; ID++) {
+			Vxm[ID] = Vx[ID] * c;
+			Vym[ID] = Vy[ID] * c;
+			Vzm[ID] = Vz[ID] * c;
+			sumxm += Vxm[ID];
+			sumym += Vym[ID];
+			sumzm += Vzm[ID];
+		}
+		fout << "А теперь: " << endl;
+		fout << "Vx средняя теперь равна " << sumxm / N << endl;
+		fout << "Vy средняя теперь равна " << sumym / N << endl;
+		fout << "Vz средняя теперь равна " << sumzm / N << endl;
 		fout.close();
 	}
 	return 0;
