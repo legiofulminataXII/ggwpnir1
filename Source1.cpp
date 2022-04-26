@@ -15,7 +15,7 @@ int main()
 	else
 	{
 		int N;
-		double Lx, Ly, Lz, T0, Tx, Ty, Tz, T, c;
+		double Lx, Ly, Lz, T0, Tx, Ty, Tz, T, c, Txd, Tyd, Tzd, Td, Txm, Tym, Tzm, Tm;
 		double m0 = 6.63e-26;
 		double k = 1.38e-23;
 		fin >> N;
@@ -84,15 +84,46 @@ int main()
 		Tx = sumx2 * m0 / (N * k);
 		Ty = sumy2 * m0 / (N * k);
 		Tz = sumz2 * m0 / (N * k);
-		T = (Tx + Ty + Tz) / 3;
-		c = sqrt(T0 / T);
+		T = (Tx + Ty + Tz) / 3; // samaia pervaia temperatura, bez dreifa i mashtabirovania
 		fout << "Vx средняя равна " << sumx / N << endl;
 		fout << "Vy средняя равна " << sumy / N << endl;
 		fout << "Vz средняя равна " << sumz / N << endl;
-		fout << "Vx в квадрате средняя равна " << sumx2 / N << endl;
-		fout << "Vy в квадрате средняя равна " << sumy2 / N << endl;
-		fout << "Vz в квадрате средняя равна " << sumz2 / N << endl;
-		fout << "T0 была равна " << T0 << ", T  теперь равно " << T << endl;
+		fout << "V^2 средняя равна " << ((sumx2 / N) + (sumy2 / N) + (sumz2 / N)) / 3 << endl;
+		fout << "T0 была равна " << T0 << "K, T теперь равнa " << T << "K" << endl;
+		vector<double>Vxd;
+		vector<double>Vyd;
+		vector<double>Vzd;
+		Vxd.resize(N);
+		Vyd.resize(N);
+		Vzd.resize(N);
+		for (ID = 0; ID < N; ID++) {
+			Vxd[ID] = Vx[ID] - (sumx / N);
+			Vyd[ID] = Vy[ID] - (sumy / N);
+			Vzd[ID] = Vz[ID] - (sumz / N); // ustranili dreif
+		}
+		double sumxd = 0;
+		double sumyd = 0;
+		double sumzd = 0;
+		double sumxd2 = 0;
+		double sumyd2 = 0;
+		double sumzd2 = 0;
+		for (int ID = 0; ID < N; ID++) {
+			sumxd += Vxd[ID];
+			sumyd += Vyd[ID];
+			sumzd += Vzd[ID];
+			sumxd2 += Vxd[ID] * Vxd[ID];
+			sumyd2 += Vyd[ID] * Vyd[ID];
+			sumzd2 += Vzd[ID] * Vzd[ID];
+		}
+		Txd = sumxd2 * m0 / (N * k);
+		Tyd = sumyd2 * m0 / (N * k);
+		Tzd = sumzd2 * m0 / (N * k);
+		Td = (Txd + Tyd + Tzd) / 3; // temperatura posle dreifa, no do mashtabirovania
+		fout << "После устранения дрейфа проекции скоростей поменялись:" << endl;
+		fout << "Vx средняя равна " << sumxd / N << endl;
+		fout << "Vy средняя равна " << sumyd / N << endl;
+		fout << "Vz средняя равна " << sumzd / N << endl;
+		fout << "Температура после устранения дрейфа равна " << Td << "K." << endl;
 		vector<double>Vxm;
 		vector<double>Vym;
 		vector<double>Vzm;
@@ -102,18 +133,26 @@ int main()
 		double sumxm = 0;
 		double sumym = 0;
 		double sumzm = 0;
+		double sumxm2 = 0;
+		double sumym2 = 0;
+		double sumzm2 = 0;
+		c = T0 / Td; // vveli coefficient
 		for (int ID = 0; ID < N; ID++) {
-			Vxm[ID] = Vx[ID] * c;
-			Vym[ID] = Vy[ID] * c;
-			Vzm[ID] = Vz[ID] * c;
+			Vxm[ID] = Vxd[ID] * c;
+			Vym[ID] = Vyd[ID] * c;
+			Vzm[ID] = Vzd[ID] * c; // domnozhili vse skorosti
 			sumxm += Vxm[ID];
 			sumym += Vym[ID];
 			sumzm += Vzm[ID];
+			sumxm2 += Vxm[ID] * Vxm[ID];
+			sumym2 += Vym[ID] * Vym[ID];
+			sumzm2 += Vzm[ID] * Vzm[ID];
 		}
-		fout << "А теперь: " << endl;
-		fout << "Vx средняя теперь равна " << sumxm / N << endl;
-		fout << "Vy средняя теперь равна " << sumym / N << endl;
-		fout << "Vz средняя теперь равна " << sumzm / N << endl;
+		Txm = sumxm2 * m0 / (N * k);
+		Tym = sumym2 * m0 / (N * k);
+		Tzm = sumzm2 * m0 / (N * k);
+		Tm = (Txm + Tym + Tzm) / 3; // temperatura posle vseh manipuliatsiy
+		fout << "Температура после масштабирования равна " << Tm << "K." << endl;
 		fout.close();
 	}
 	return 0;
